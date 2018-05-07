@@ -4,7 +4,7 @@
 var system = wx.getSystemInfoSync();
 console.log(system);
 // 此处主机域名修改成腾讯云解决方案分配的域名
-if (system.brand == 'devtoolss') {
+if (system.brand == 'devtools') {
   var host = 'http://localhost/fastadmin';
   var api = host + '/public/api';
 }else{
@@ -25,6 +25,7 @@ var config = {
     repairAreaUrl: `${api}/repair/get_repair_areas`,
     repairSubmitUrl: `${api}/repair/submit`,
     repairDetailService: `${api}/repair/get_repair_detail`,
+    repairRateSubmitUrl: `${api}/repair/submit_rate`,
     //获取课表
     kebiaoUrl: `${api}/course`,
     //获取一卡通
