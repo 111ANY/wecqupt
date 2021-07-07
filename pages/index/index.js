@@ -8,14 +8,16 @@ Page({
     remind: '加载中',
     cores: [
       [
-        { id: 'bx', name: '物业报修', disabled: false, teacher_disabled: false, offline_disabled: true },
-        { id: 'kb', name: '课表查询', disabled: false, teacher_disabled: false, offline_disabled: false },
-        { id: 'cj', name: '成绩查询', disabled: false, teacher_disabled: false, offline_disabled: false },
+        { id: 'bx', name: '宿舍报修', disabled: false, teacher_disabled: false, offline_disabled: true },
+        { id: 'ykt', name: '一卡通', disabled: false, teacher_disabled: false, offline_disabled: false },
+        { id: 'kb', name: '课表查询', disabled: false, teacher_disabled: true, offline_disabled: false },
+        { id: 'cj', name: '成绩查询', disabled: false, teacher_disabled: true, offline_disabled: false },
         { id: 'ks', name: '考试安排', disabled: true, teacher_disabled: false, offline_disabled: false },
         { id: 'kjs', name: '空教室', disabled: true, teacher_disabled: false, offline_disabled: true },
         { id: 'xs', name: '学生查询', disabled: true, teacher_disabled: false, offline_disabled: true },
-        { id: 'ykt', name: '一卡通', disabled: false, teacher_disabled: false, offline_disabled: false },
-        { id: 'jy', name: '借阅信息', disabled: true, teacher_disabled: false, offline_disabled: false },
+        { id: 'jy', name: '借阅信息', disabled: false, teacher_disabled: false, offline_disabled: false },
+        { id: 'xc', name: '校车时间', disabled: false, teacher_disabled: false, offline_disabled: false },
+        { id: 'bzr', name: '班主任评价', disabled: false, teacher_disabled: true, offline_disabled: false }
       ]
     ],
     card: {
@@ -187,7 +189,7 @@ Page({
   getCardData: function(){
     var _this = this;
     //判断并读取缓存
-    if(app.cache.kb){ kbRender(app.cache.kb); }
+    if (app.cache.kb && !app._user.teacher){ kbRender(app.cache.kb); }
     if(app.cache.ykt){ yktRender(app.cache.ykt); }
     if(app.cache.sdf){ sdfRender(app.cache.sdf); }
     if(app.cache.jy){ jyRender(app.cache.jy); }
@@ -196,15 +198,12 @@ Page({
 
     //课表渲染
     function kbRender(info){
-      var today = parseInt(info.day);
-      //console.log(today);
+      //var today = parseInt(info.day);
+      var today = new Date().getDay();//若从缓存中获取，有可能出现日期滞后的情况
       var lessons = info.lessons[today===0 ? 6 : today-1], //day为0表示周日(6)，day为1表示周一(0)..
           list = [];
       var time_list = _this.data.card.kb.time_list;
-      //console.log(lessons);
-
-      for(var i = 0; i < 1; i++){
-        //console.log("i:"+i);
+      for(var i = 0; i < 5; i++){
         for(var j = 0; j < lessons[i].length; j++){
           var lesson = lessons[i][j];
           if(lesson.weeks && lesson.weeks.indexOf(parseInt(info.week)) !== -1){
@@ -240,7 +239,7 @@ Page({
       success: function(res) {
         if(res.data && res.data.status === 200){
           var info = res.data.data;
-          if(info){
+          if(info && !app._user.teacher){
             //保存课表缓存
             app.saveCache('kb', info);
             kbRender(info);
@@ -299,7 +298,8 @@ Page({
       method: 'POST',
       data: app.key({
         //yktID: app._user.we.ykth
-        id: app._user.we.id
+        id: app._user.we.id,
+        //teacher:app._user.teacher
       }),
       success: function(res) {
         if(res.data && res.data.status === 200){

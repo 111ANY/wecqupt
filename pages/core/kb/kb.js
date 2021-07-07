@@ -276,19 +276,19 @@ Page({
     if(app.cache.kb && !_this.data.name){ kbRender(app.cache.kb); }
     //课表渲染
     function kbRender(_data){
-      //console.log(_data);
       var colors = ['blue','red','green','purple','yellow'];
       var i,ilen,j,jlen,k,klen;
       var colorsDic = {};
       var _lessons = _data.lessons;
       var _colors = colors.slice(0); //暂存一次都未用过的颜色
-      var is_vacation = _data.is_vacation;
-        
+      var is_vacation = _data.is_vacation; 
+      console.log(_lessons);
+      console.log(_lessons.length); 
       // 循环课程
       for( i = 0, ilen = _lessons.length; i < ilen; i++){
         for( j = 0, jlen = _lessons[i].length; j < jlen; j++){
           for( k = 0, klen = _lessons[i][j].length; k < klen; k++){
-            if (_lessons[i][j][k] && _lessons[i][j][k].class_id) {
+            if (_lessons[i][j][k] && _lessons[i][j][k].name) {
               // 找出冲突周数,及课程数
               var conflictWeeks = {};
               _lessons[i][j][k].weeks.forEach(function(e){
@@ -302,7 +302,8 @@ Page({
               _lessons[i][j][k].klen = klen;
               _lessons[i][j][k].xf_num = _lessons[i][j][k].xf ? parseFloat(_lessons[i][j][k].xf).toFixed(1) : '';
               // 为课程上色
-              if (!colorsDic[_lessons[i][j][k].place]) { //如果该课还没有被上色
+              //console.warn(_lessons[i][j][k]);
+              if (!colorsDic[_lessons[i][j][k].name]) { //如果该课还没有被上色
                 var iColors = !_colors.length ? colors.slice(0) : _colors.slice(0); // 本课程可选颜色
                 if(!_colors.length){ //未用过的颜色还没用过，就优先使用
                   // 剔除掉其上边和左边的课程的可选颜色，如果i!==0则可剔除左边课程颜色，如果j!==0则可剔除上边课程颜色
@@ -330,11 +331,11 @@ Page({
                 var iColor = iColors[Math.floor(Math.random()*iColors.length)];
                 //var iColor = iColors[0];
                 _lessons[i][j][k].color = iColor;
-                colorsDic[_lessons[i][j][k].place] = iColor;
+                colorsDic[_lessons[i][j][k].name] = iColor;
                 if(_colors.length){ _colors = removeByValue(_colors, iColor); }
               } else {
                 //该课继续拥有之前所上的色
-                _lessons[i][j][k].color = colorsDic[_lessons[i][j][k].place];
+                _lessons[i][j][k].color = colorsDic[_lessons[i][j][k].name];
               }
             }
           }
